@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import NewsArticles from "./pages/NewsArticles";
 import Header from "./components/shared/Header";
 import { Toaster } from "@/components/ui/sonner";
+import Footer from "@/components/shared/Footer";
 
 const App = () => {
   return (
@@ -22,6 +23,8 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/news" element={<NewsArticles />} />
       </Routes>
+
+      <Footer />
 
       <Toaster />
     </BrowserRouter>
