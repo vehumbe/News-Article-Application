@@ -1,5 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,13 +21,18 @@ const formSchema = z.object({
   username: z
     .string()
     .min(2, { message: "Username must be atleast 2 characters." }),
-  email: z.string().min({ message: "Invalid email address." }),
+  email: z.string().email({ message: "Invalid email address." }),
   password: z
     .string()
     .min(8, { message: "Password must be atleast 8 characters." }),
 });
 
 const SignUpForm = () => {
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+
   // 1. Define your form.
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -37,10 +43,38 @@ const SignUpForm = () => {
     },
   });
 
-  function onSubmit(values) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values) {
+    try {
+      setLoading(true);
+      setErrorMessage(null);
+
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      const data = await res.json();
+
+      if (data.success == false) {
+        setLoading(false);
+
+        toast.error("Sign up failed! Please try again.");
+
+        return setErrorMessage(data.message);
+      }
+
+      setLoading(false);
+
+      if (res.ok) {
+        toast.success("Sign up Successful!");
+        navigate("/sign-in");
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+      setLoading(false);
+      toast.error("Something went wrong!");
+    }
   }
 
   return (
@@ -74,7 +108,7 @@ const SignUpForm = () => {
         {/* right */}
         <div className="flex-1">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
               <FormField
                 control={form.control}
                 name="username"
@@ -128,8 +162,16 @@ const SignUpForm = () => {
                 )}
               />
 
-              <Button type="submit" className="bg-blue-500 w-full">
-                Submit
+              <Button
+                type="submit"
+                className="bg-blue-500 w-full"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="animate-pulse">Loading...</span>
+                ) : (
+                  <span>Sign Up</span>
+                )}
               </Button>
             </form>
           </Form>
@@ -140,6 +182,10 @@ const SignUpForm = () => {
               Sign In
             </Link>
           </div>
+
+          {errorMessage && (
+            <p className="text-red-500 text-sm mt-5">{errorMessage}</p>
+          )}
         </div>
       </div>
     </div>
