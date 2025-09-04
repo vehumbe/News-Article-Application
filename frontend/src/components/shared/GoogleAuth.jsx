@@ -4,7 +4,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { app } from "@/firebase";
 import { signInSuccess } from "@/redux/user/userSlice";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const GoogleAuth = () => {
   const auth = getAuth(app);
@@ -41,7 +41,7 @@ const GoogleAuth = () => {
     <div>
       <Button
         type="button"
-        classname="bg-green-500 w-full"
+        className="bg-green-500 w-full"
         onClick={handleGoogleClick}
       >
         Continue with Google
