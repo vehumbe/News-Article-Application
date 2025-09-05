@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardSidebar from "@/components/shared/DashboardSidebar";
 import { useLocation } from "react-router-dom";
-import { DashboardProfile } from "@/components/shared/DashboardProfile";
-import { BottomNavBar } from "@/components/shared/BottomNavBar";
+import DashboardProfile from "@/components/shared/DashboardProfile";
+import BottomNavBar from "@/components/shared/BottomNavBar";
 
 const Dashboard = () => {
   const location = useLocation();
@@ -28,7 +28,7 @@ const Dashboard = () => {
       <BottomNavBar />
 
       {/* profile */}
-      <div>{tab === "profile" && <DashboardProfile />}</div>
+      <div className="w-full">{tab === "profile" && <DashboardProfile />}</div>
     </div>
   );
 };
