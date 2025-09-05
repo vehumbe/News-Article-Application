@@ -7,7 +7,7 @@ const DashboardProfile = () => {
   const { currentUser } = useSelector((state) => state.user);
   const profilePicRef = useRef();
 
-  const [imageFile, setImageFile] = useState(null);
+  const [, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
 
   const handleImageChange = (e) => {
