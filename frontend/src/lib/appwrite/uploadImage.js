@@ -1,6 +1,6 @@
 //Upload File
-import { ImageGravity } from "appwrite"
-import {appwriteConfig, storage, ID } from "./config"
+import { ImageGravity, ID } from "appwrite"
+import {appwriteConfig, storage } from "./config"
 export async function uploadFile(file){
     try {
         const uploadedFile = await storage.createFile(

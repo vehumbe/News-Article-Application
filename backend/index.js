@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
 
+
 import authRoutes from "./routes/auth.route.js"
 import userRoutes from "./routes/user.route.js"
 
@@ -18,6 +19,7 @@ mongoose
 })
 
 const app = express()
+
 
 // for allowing json object in req body
 app.use(express.json())
