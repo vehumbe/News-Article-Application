@@ -8,10 +8,24 @@ import {
   updateSuccess,
   updateFailure,
   updateStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+  deleteUserStart,
 } from "@/redux/user/userSlice";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
 
 const DashboardProfile = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, error } = useSelector((state) => state.user);
 
   const profilePicRef = useRef();
   const dispatch = useDispatch();
@@ -73,8 +87,6 @@ const DashboardProfile = () => {
 
       const data = await res.json();
 
-      
-
       if (data.success === false) {
         toast.error("Update user failed. Please try again!");
         dispatch(updateFailure(data.message));
@@ -87,6 +99,27 @@ const DashboardProfile = () => {
       toast.error("Update user failed. Please try again!");
       dispatch(updateFailure(error.message));
       toast.error("Update user failed. Please try again!");
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        dispatch(deleteUserFailure(data.message));
+      } else {
+        dispatch(deleteUserSuccess());
+      }
+    } catch (error) {
+      console.log(error);
+      dispatch(deleteUserFailure(error.message));
     }
   };
 
@@ -145,9 +178,40 @@ const DashboardProfile = () => {
       </form>
 
       <div className="text-red-500 flex justify-between mt-5 cursor-pointer">
-        <span className="cursor-pointer">Delete Account</span>
-        <span className="cursor-pointer">Sign Out</span>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="ghost" className="cursor-pointer ">
+              Delete Account
+            </Button>
+          </AlertDialogTrigger>
+
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-600"
+                onClick={handleDeleteUser}
+              >
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <Button variant="ghost" className="cursor-pointer ">
+          Sign Out
+        </Button>
       </div>
+
+      <p className="text-red-600">{error}</p>
     </div>
   );
 };

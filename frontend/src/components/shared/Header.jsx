@@ -64,8 +64,7 @@ const Header = () => {
                 <img
                   src={currentUser.profilePicture}
                   alt="user photo"
-                  className="w-10
-                h-10 rounded-full"
+                  className="w-10 h-10 rounded-full"
                 />
               </div>
             </DropdownMenuTrigger>
