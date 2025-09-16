@@ -26,7 +26,7 @@ import {
 import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
 
 const DashboardProfile = () => {
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
 
   const profilePicRef = useRef();
   const dispatch = useDispatch();
@@ -190,7 +190,8 @@ const DashboardProfile = () => {
           onChange={handleChange}
         />
 
-        <Button type="submit" className="h-12 bg-green-600">
+        <Button type="submit" className="h-12 bg-green-600" disabled={loading}>
+          {loading ? "Loading..." : "Update Profile"}
           Update Profile
         </Button>
       </form>
