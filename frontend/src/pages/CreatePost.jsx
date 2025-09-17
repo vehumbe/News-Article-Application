@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -9,11 +10,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React from "react";
+import { getFilePreview, uploadFile } from "@/lib/appwrite/uploadImage";
+import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 const CreatePost = () => {
+  const [file, setFile] = useState(null);
+
+  const [imageUploadError, setImageUploadError] = useState(null);
+  const [imageUploading, setImageUploading] = useState(false);
+
+  const [formData, setFormData] = useState({});
+
+  const handleUploadImage = async () => {
+    try {
+      if (!file) {
+        setImageUploadError("Please select an image!");
+        toast("Please select an image!");
+        return;
+      }
+
+      setImageUploading(true);
+
+      setImageUploadError(null);
+
+      const uploadedFile = await uploadFile(file);
+      const postImageUrl = getFilePreview(uploadedFile.$id);
+
+      setFormData({ ...formData, image: postImageUrl });
+
+      toast.success("Image uploaded successfully!");
+
+      if (postImageUrl) {
+        setImageUploading(false);
+      }
+    } catch (error) {
+      setImageUploadError("Image upload failed");
+      console.log(error);
+
+      toast.error("Image upload failed");
+      setImageUploading(false);
+    }
+  };
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold text-slate-700">
@@ -49,10 +88,30 @@ const CreatePost = () => {
           </Select>
         </div>
         <div className="flex gap-4 items-center justify-between border-4 border-slate-600 border-dotted p-3">
-          <Input type="file" accept="image/*" />
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
 
-          <Button className="bg-slate-700">Upload Image</Button>
+          <Button
+            type="button"
+            className="bg-slate-700"
+            onClick={handleUploadImage}
+          >
+            {imageUploading ? "Uploading..." : "Upload Image"}
+          </Button>
         </div>
+
+        {imageUploadError && <p className="text-red-600">{imageUploadError}</p>}
+
+        {formData.image && (
+          <img
+            src={formData.image}
+            alt="upload"
+            className="w-full h-72 object-cover"
+          />
+        )}
         <ReactQuill
           theme="snow"
           placeholder="Write something here..."
